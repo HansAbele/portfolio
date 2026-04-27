@@ -4,7 +4,8 @@ import "@fontsource-variable/jetbrains-mono";
 import "../styles/global.css";
 import BubbleBackground from "../components/BubbleBackground.astro";
 import CursorFollower from "../components/CursorFollower.astro";
-import { COPY, type Lang } from "../data/copy";
+import SpeedInsights from "@vercel/speed-insights/astro";
+import { COPY, SOCIALS, type Lang } from "../data/copy";
 // Resolve the Inter Variable woff2 URL via Vite so the preload `<link>`
 // points to the exact hashed asset the browser will fetch.
 import interLatin from "@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url";
@@ -33,6 +34,39 @@ const altPath = lang === "en" ? "/es" : "/";
 const altURL = new URL(altPath, Astro.site).toString();
 const altLang = lang === "en" ? "es" : "en";
 const xDefaultURL = new URL("/", Astro.site).toString();
+
+// Absolute OG image URL — must be absolute for crawlers (LinkedIn, Twitter, etc.).
+const ogImageURL = new URL("/og.png", Astro.site).toString();
+
+// JSON-LD Person schema. Helps Google show enriched results (knowledge
+// panel-style cards) when someone searches the name. The same blob is
+// emitted on both /en and /es; sameAs links point at the canonical
+// social profiles.
+const personSchema = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: "Johan Taveras",
+  alternateName: ["Johan Abel Taveras"],
+  url: Astro.site?.toString(),
+  image: ogImageURL,
+  jobTitle: lang === "en" ? "Full-Stack Engineer" : "Ingeniero Full-Stack",
+  description: description,
+  email: SOCIALS.email.replace("mailto:", ""),
+  nationality: "Dominican",
+  knowsLanguage: ["en", "es"],
+  knowsAbout: [
+    "Full-Stack Engineering",
+    "Applied AI",
+    "RAG systems",
+    "TypeScript",
+    "Node.js",
+    "React",
+    "Next.js",
+    "PostgreSQL",
+    "Electron",
+  ],
+  sameAs: [SOCIALS.linkedin, SOCIALS.github],
+};
 ---
 
 <!doctype html>
@@ -67,10 +101,19 @@ const xDefaultURL = new URL("/", Astro.site).toString();
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonicalURL} />
     <meta property="og:locale" content={lang === "en" ? "en_US" : "es_DO"} />
+    <meta property="og:image" content={ogImageURL} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={t.a11y.photoAlt} />
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageURL} />
+
+    {/* JSON-LD Person schema — emitted server-side; safe because the data
+        comes from our own copy + SOCIALS constants, no user input. */}
+    <script type="application/ld+json" set:html={JSON.stringify(personSchema)} />
 
     <noscript>
       <style>
@@ -106,6 +149,7 @@ const xDefaultURL = new URL("/", Astro.site).toString();
 
     <BubbleBackground />
     <CursorFollower />
+    <SpeedInsights />
 
     <div class="app">
       <main id="main" tabindex="-1">
