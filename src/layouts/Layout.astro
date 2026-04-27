@@ -1,0 +1,135 @@
+---
+import "@fontsource-variable/inter";
+import "@fontsource-variable/jetbrains-mono";
+import "../styles/global.css";
+import BubbleBackground from "../components/BubbleBackground.astro";
+import CursorFollower from "../components/CursorFollower.astro";
+
+interface Props {
+  title: string;
+  description?: string;
+  lang?: "es" | "en";
+}
+
+const {
+  title,
+  description = "Johan Taveras — Ingeniero Full-Stack. Sistemas internos, IA aplicada y software que mueve operaciones reales.",
+  lang = "es",
+} = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site).toString();
+
+// hreflang alternates: /  ⇄ /en
+const altPath = lang === "es" ? "/en/" : "/";
+const altURL = new URL(altPath, Astro.site).toString();
+const altLang = lang === "es" ? "en" : "es";
+const xDefaultURL = new URL("/", Astro.site).toString();
+---
+
+<!doctype html>
+<html lang={lang} data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="color-scheme" content="light dark" />
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="canonical" href={canonicalURL} />
+    <link rel="alternate" hreflang={lang} href={canonicalURL} />
+    <link rel="alternate" hreflang={altLang} href={altURL} />
+    <link rel="alternate" hreflang="x-default" href={xDefaultURL} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:locale" content={lang === "es" ? "es_DO" : "en_US"} />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+
+    <noscript>
+      <style>
+        /* Without JS the reveal observer never fires — show content immediately. */
+        [data-reveal],
+        .reveal-stagger > [data-reveal-child] {
+          opacity: 1 !important;
+          transform: none !important;
+        }
+      </style>
+    </noscript>
+
+    <script is:inline>
+      // Inline theme bootstrap — runs before paint to avoid FOUC.
+      // Reads stored preference; falls back to system.
+      (() => {
+        try {
+          const stored = localStorage.getItem("theme");
+          const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+          const theme = stored ?? (prefersDark ? "dark" : "light");
+          document.documentElement.dataset.theme = theme;
+        } catch {
+          /* localStorage may be blocked — keep default light */
+        }
+      })();
+    </script>
+  </head>
+
+  <body>
+    <BubbleBackground />
+    <CursorFollower />
+    <div class="app">
+      <slot />
+    </div>
+
+    <script>
+      /**
+       * Reveal-on-scroll — observes [data-reveal] elements and toggles
+       * [data-revealed] when they enter the viewport. The CSS in global.css
+       * handles the actual fade + translate transition. One-shot per element.
+       */
+      function bindReveal() {
+        if (typeof window === "undefined") return;
+
+        const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        const targets = document.querySelectorAll<HTMLElement>("[data-reveal]:not([data-revealed])");
+
+        // Reduced motion: reveal everything immediately, skip the observer.
+        if (reducedMotion) {
+          targets.forEach((el) => el.setAttribute("data-revealed", ""));
+          return;
+        }
+
+        // Forward optional per-element delay (ms) into a CSS var.
+        targets.forEach((el) => {
+          const delay = el.getAttribute("data-reveal-delay");
+          if (delay && delay !== "0") {
+            el.style.setProperty("--reveal-delay", delay);
+          }
+        });
+
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.setAttribute("data-revealed", "");
+                observer.unobserve(entry.target);
+              }
+            });
+          },
+          { rootMargin: "0px 0px -8% 0px", threshold: 0.08 }
+        );
+
+        targets.forEach((el) => observer.observe(el));
+      }
+
+      bindReveal();
+      document.addEventListener("astro:page-load", bindReveal);
+    </script>
+  </body>
+</html>

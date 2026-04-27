@@ -1,0 +1,29 @@
+---
+/**
+ * Reveal wrapper — fades + translates its slot into view when scrolled to.
+ * Works without React. The actual observer + CSS lives in Layout (script + global.css).
+ *
+ * Props:
+ *   stagger — when set, child elements with `[data-reveal-child]` animate one by one.
+ *   delay   — additional delay (ms) before this element reveals (default 0).
+ *   as      — element tag, defaults to <div>.
+ */
+interface Props {
+  stagger?: boolean;
+  delay?: number;
+  as?: string;
+  class?: string;
+  id?: string;
+}
+
+const { stagger = false, delay = 0, as: Tag = "div", class: className, id } = Astro.props;
+---
+
+<Tag
+  class:list={["reveal", { "reveal-stagger": stagger }, className]}
+  data-reveal
+  data-reveal-delay={delay}
+  id={id}
+>
+  <slot />
+</Tag>

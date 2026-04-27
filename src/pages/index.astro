@@ -1,0 +1,25 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import Hero from "../components/Hero.astro";
+import About from "../components/About.astro";
+import Experience from "../components/Experience.astro";
+import Projects from "../components/Projects.astro";
+import Stack from "../components/Stack.astro";
+import Contact from "../components/Contact.astro";
+import Footer from "../components/Footer.astro";
+import Reveal from "../components/Reveal.astro";
+
+const lang = "es" as const;
+---
+
+<Layout title="Johan Taveras — Ingeniero Full-Stack" lang={lang}>
+  <Header lang={lang} />
+  <Reveal><Hero lang={lang} /></Reveal>
+  <Reveal><About lang={lang} /></Reveal>
+  <Reveal><Experience lang={lang} /></Reveal>
+  <Reveal><Projects lang={lang} /></Reveal>
+  <Reveal><Stack lang={lang} /></Reveal>
+  <Reveal><Contact lang={lang} /></Reveal>
+  <Footer lang={lang} />
+</Layout>

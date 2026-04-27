@@ -1,0 +1,89 @@
+---
+import { COPY, type Lang } from "../data/copy";
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = "es" } = Astro.props;
+const t = COPY[lang];
+---
+
+<section id="about" class="about" aria-labelledby="about-title">
+  <div class="container">
+    <p class="eyebrow">
+      <span><span class="num">01</span> / {t.about.title}</span>
+    </p>
+    <h2 id="about-title" class="section-title">{t.about.title}</h2>
+
+    <div class="card">
+      <p>{t.about.p1}</p>
+      <p>{t.about.p2}</p>
+      <p>{t.about.p3}</p>
+
+      <dl class="about-stats">
+        {t.about.stats.map((stat) => (
+          <div class="about-stat">
+            <dt class="num">{stat.value}</dt>
+            <dd class="lab">{stat.label}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  </div>
+</section>
+
+<style>
+  .about p {
+    margin: 0 0 18px;
+    color: var(--ink-2);
+    font-size: 16px;
+    line-height: 1.7;
+  }
+
+  .about p:last-of-type {
+    margin-bottom: 0;
+  }
+
+  .about-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin: 32px 0 0;
+    padding-top: 28px;
+    border-top: 1px solid var(--line);
+  }
+
+  .about-stat {
+    margin: 0;
+  }
+
+  .about-stat .num {
+    font-size: 36px;
+    letter-spacing: -0.03em;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    display: block;
+    line-height: 1;
+    margin: 0;
+  }
+
+  .about-stat .lab {
+    font-size: 12px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 8px 0 0;
+    display: block;
+  }
+
+  @media (max-width: 860px) {
+    .about-stats {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+  }
+</style>

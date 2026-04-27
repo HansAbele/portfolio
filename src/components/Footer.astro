@@ -1,0 +1,75 @@
+---
+import { COPY, SOCIALS, type Lang } from "../data/copy";
+import IconMail from "./icons/IconMail.astro";
+import IconLinkedin from "./icons/IconLinkedin.astro";
+import IconGithub from "./icons/IconGithub.astro";
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = "es" } = Astro.props;
+const t = COPY[lang];
+---
+
+<footer class="footer">
+  <div class="container footer-grid">
+    <p class="footer-credit">{t.footer.credit}</p>
+    <p class="footer-build">{t.footer.build}</p>
+
+    <ul class="socials footer-socials" aria-label="Redes">
+      <li>
+        <a class="social" href={SOCIALS.email} aria-label="Email">
+          <IconMail size={14} />
+        </a>
+      </li>
+      <li>
+        <a class="social" href={SOCIALS.linkedin} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+          <IconLinkedin size={14} />
+        </a>
+      </li>
+      <li>
+        <a class="social" href={SOCIALS.github} target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+          <IconGithub size={14} />
+        </a>
+      </li>
+    </ul>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    border-top: 1px solid var(--line);
+    margin-top: 40px;
+  }
+
+  .footer-grid {
+    padding: 32px 28px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .footer-credit,
+  .footer-build {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+    margin: 0;
+    text-transform: none;
+  }
+
+  .footer-socials {
+    margin: 0;
+    list-style: none;
+    padding: 0;
+  }
+
+  .footer-socials :global(.social) {
+    width: 36px;
+    height: 36px;
+  }
+</style>

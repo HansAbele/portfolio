@@ -1,0 +1,87 @@
+---
+import { COPY, SOCIALS, type Lang } from "../data/copy";
+import ContactForm from "./ContactForm.astro";
+import IconMail from "./icons/IconMail.astro";
+import IconLinkedin from "./icons/IconLinkedin.astro";
+import IconGithub from "./icons/IconGithub.astro";
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = "es" } = Astro.props;
+const t = COPY[lang];
+---
+
+<section id="contact" class="contact" aria-labelledby="contact-title">
+  <div class="container">
+    <p class="eyebrow contact-eyebrow">
+      <span><span class="num">05</span> / {t.contact.title}</span>
+    </p>
+    <h2 id="contact-title" class="contact-title">{t.contact.title}</h2>
+    <p class="contact-sub">{t.contact.subtitle}</p>
+
+    <ContactForm lang={lang} />
+
+    <ul class="socials contact-socials" aria-label={lang === "es" ? "Redes" : "Social"}>
+      <li>
+        <a class="social" href={SOCIALS.email} aria-label="Email">
+          <IconMail size={16} />
+        </a>
+      </li>
+      <li>
+        <a class="social" href={SOCIALS.linkedin} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+          <IconLinkedin size={16} />
+        </a>
+      </li>
+      <li>
+        <a class="social" href={SOCIALS.github} target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+          <IconGithub size={16} />
+        </a>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<style>
+  .contact {
+    text-align: center;
+    padding: 80px 0 60px;
+  }
+
+  .contact .container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .contact-eyebrow {
+    justify-content: center;
+  }
+
+  .contact-title {
+    font-size: clamp(48px, 7vw, 84px);
+    letter-spacing: -0.035em;
+    font-weight: 700;
+    line-height: 1;
+    margin: 0 0 22px;
+    background: linear-gradient(135deg, var(--ink), var(--accent));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .contact-sub {
+    max-width: 520px;
+    margin: 0 auto 36px;
+    font-size: 17px;
+    color: var(--ink-2);
+    line-height: 1.6;
+  }
+
+  .contact-socials {
+    margin: 32px 0 0;
+    list-style: none;
+    padding: 0;
+  }
+</style>

@@ -1,0 +1,524 @@
+---
+/**
+ * Contact form — vanilla, accessible, Web3Forms-backed.
+ *
+ * State machine (idle → submitting → success | error). All copy is passed in
+ * via props so the same component renders for ES + EN.
+ *
+ * Web3Forms is a free static-form relay; we POST JSON to api.web3forms.com
+ * with a public access_key. The key is intended to be public — it can only
+ * trigger emails to the inbox the key was configured with.
+ *
+ * Configure the key in .env:   PUBLIC_WEB3FORMS_KEY=xxxx-xxxx-xxxx
+ */
+
+import type { Lang } from "../data/copy";
+import { COPY, SOCIALS } from "../data/copy";
+import IconArrow from "./icons/IconArrow.astro";
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = "es" } = Astro.props;
+const t = COPY[lang].contact.form;
+
+// Public env var — embedded into the client bundle by Astro at build time.
+// Empty when not configured locally; the form falls back to a mailto CTA.
+const accessKey = import.meta.env.PUBLIC_WEB3FORMS_KEY ?? "";
+const hasKey = accessKey.length > 0;
+
+// Subject line for the email Web3Forms sends to the inbox.
+const subject =
+  lang === "es"
+    ? "Nuevo mensaje desde johandev.vercel.app"
+    : "New message from johandev.vercel.app";
+---
+
+{hasKey ? (
+  <form
+    class="contact-form card"
+    data-contact-form
+    data-access-key={accessKey}
+    data-subject={subject}
+    data-lang={lang}
+    novalidate
+    aria-labelledby="contact-title"
+  >
+    <div class="field">
+      <label for="cf-name">{t.name.label}</label>
+      <input
+        id="cf-name"
+        name="name"
+        type="text"
+        autocomplete="name"
+        required
+        minlength="2"
+        placeholder={t.name.placeholder}
+        aria-describedby="cf-name-error"
+      />
+      <p class="field-error" id="cf-name-error" data-error-for="name"></p>
+    </div>
+
+    <div class="field">
+      <label for="cf-email">{t.email.label}</label>
+      <input
+        id="cf-email"
+        name="email"
+        type="email"
+        autocomplete="email"
+        required
+        placeholder={t.email.placeholder}
+        aria-describedby="cf-email-error"
+      />
+      <p class="field-error" id="cf-email-error" data-error-for="email"></p>
+    </div>
+
+    <div class="field">
+      <label for="cf-message">{t.message.label}</label>
+      <textarea
+        id="cf-message"
+        name="message"
+        rows="5"
+        required
+        minlength="10"
+        placeholder={t.message.placeholder}
+        aria-describedby="cf-message-error"
+      ></textarea>
+      <p class="field-error" id="cf-message-error" data-error-for="message"></p>
+    </div>
+
+    {/* Honeypot — bots tend to fill every field; humans don't see this one. */}
+    <div class="hp" aria-hidden="true">
+      <label>
+        Don't fill this out
+        <input type="checkbox" name="botcheck" tabindex="-1" autocomplete="off" />
+      </label>
+    </div>
+
+    <div class="form-foot">
+      <button type="submit" class="btn btn-primary form-submit" data-submit>
+        <span data-submit-label>{t.submit}</span>
+        <span class="spinner" data-spinner aria-hidden="true"></span>
+        <span data-submit-arrow><IconArrow size={14} /></span>
+      </button>
+
+      <p class="form-mail-fallback">
+        {t.orMail} <a href={SOCIALS.email}>johanhapusa@gmail.com</a>
+      </p>
+    </div>
+
+    <div class="form-status" role="status" aria-live="polite" data-status>
+      <div class="status-success" data-status-success hidden>
+        <h3>{t.success.title}</h3>
+        <p>{t.success.body}</p>
+        <button type="button" class="btn form-reset" data-form-reset>{t.success.again}</button>
+      </div>
+
+      <div class="status-error" data-status-error hidden>
+        <h3>{t.error.title}</h3>
+        <p data-error-body>{t.error.body}</p>
+      </div>
+    </div>
+  </form>
+) : (
+  <a href={SOCIALS.email} class="btn btn-primary contact-cta">
+    {COPY[lang].contact.cta}
+    <IconArrow size={14} />
+  </a>
+)}
+
+<style>
+  .contact-form {
+    width: min(100%, 560px);
+    margin: 0 auto;
+    text-align: left;
+    display: grid;
+    gap: 18px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .field {
+    display: grid;
+    gap: 6px;
+  }
+
+  .field label {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .field input,
+  .field textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 14px;
+    border: 1px solid var(--line-2);
+    background: var(--glass-2);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    color: var(--ink);
+    font-family: inherit;
+    font-size: 14.5px;
+    line-height: 1.5;
+    transition:
+      border-color 0.2s var(--ease-out-quart),
+      box-shadow 0.2s var(--ease-out-quart),
+      background 0.2s var(--ease-out-quart);
+  }
+
+  .field textarea {
+    resize: vertical;
+    min-height: 120px;
+  }
+
+  .field input::placeholder,
+  .field textarea::placeholder {
+    color: var(--muted-2);
+  }
+
+  .field input:focus,
+  .field textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent) 25%, transparent);
+  }
+
+  .field[data-invalid] input,
+  .field[data-invalid] textarea {
+    border-color: #d8466b;
+    box-shadow: 0 0 0 3px rgba(216, 70, 107, 0.15);
+  }
+
+  .field-error {
+    margin: 0;
+    font-size: 12.5px;
+    color: #c43a5d;
+    min-height: 0;
+    opacity: 0;
+    transform: translateY(-4px);
+    transition:
+      opacity 0.2s var(--ease-out-quart),
+      transform 0.2s var(--ease-out-quart);
+  }
+
+  .field[data-invalid] .field-error {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  :global([data-theme="dark"]) .field-error {
+    color: #ff8aa6;
+  }
+
+  /* Honeypot kept off-screen but still focusable to bots */
+  .hp {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+
+  .form-foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px 18px;
+    margin-top: 4px;
+  }
+
+  .form-submit {
+    position: relative;
+    min-width: 180px;
+    justify-content: center;
+  }
+
+  .form-submit[data-state="submitting"] {
+    cursor: progress;
+    pointer-events: none;
+    opacity: 0.85;
+  }
+
+  .form-submit[data-state="submitting"] [data-submit-arrow] {
+    display: none;
+  }
+
+  .spinner {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 2px solid color-mix(in oklab, currentColor 25%, transparent);
+    border-top-color: currentColor;
+    display: none;
+    animation: form-spin 0.7s linear infinite;
+  }
+
+  .form-submit[data-state="submitting"] .spinner {
+    display: inline-block;
+  }
+
+  @keyframes form-spin {
+    to { transform: rotate(360deg); }
+  }
+
+  .form-mail-fallback {
+    margin: 0;
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+
+  .form-mail-fallback a {
+    color: var(--accent);
+    text-decoration: underline;
+    text-decoration-color: color-mix(in oklab, var(--accent) 40%, transparent);
+    text-underline-offset: 3px;
+  }
+
+  /* Status panels — slide in over the form once a result is reached */
+  .form-status {
+    margin: 0;
+  }
+
+  .status-success,
+  .status-error {
+    margin-top: 8px;
+    padding: 18px 20px;
+    border-radius: 16px;
+    border: 1px solid var(--line-2);
+    background: var(--glass-2);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .status-success {
+    border-color: color-mix(in oklab, #2bb673 35%, var(--line-2));
+    background: color-mix(in oklab, #2bb673 8%, var(--glass-2));
+  }
+
+  .status-error {
+    border-color: color-mix(in oklab, #c43a5d 35%, var(--line-2));
+    background: color-mix(in oklab, #c43a5d 8%, var(--glass-2));
+  }
+
+  .status-success h3,
+  .status-error h3 {
+    margin: 0 0 6px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .status-success p,
+  .status-error p {
+    margin: 0 0 12px;
+    font-size: 14px;
+    color: var(--ink-2);
+    line-height: 1.55;
+  }
+
+  .form-reset {
+    padding: 8px 16px;
+    font-size: 13px;
+  }
+
+  /* Hide the form fields once we've reached a "success" terminal state. */
+  .contact-form[data-state="success"] .field,
+  .contact-form[data-state="success"] .form-foot,
+  .contact-form[data-state="success"] .hp {
+    display: none;
+  }
+</style>
+
+<script>
+  /**
+   * Contact form controller — small vanilla state machine that:
+   *  1. Validates fields on blur + on submit
+   *  2. POSTs JSON to Web3Forms
+   *  3. Toggles submitting / success / error UI
+   *
+   * Re-binds on `astro:page-load` so it survives view transitions.
+   */
+  type State = "idle" | "submitting" | "success" | "error";
+
+  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  function bindContactForm() {
+    if (typeof window === "undefined") return;
+
+    const form = document.querySelector<HTMLFormElement>("[data-contact-form]");
+    if (!form) return;
+
+    const accessKey = form.dataset.accessKey ?? "";
+    const subject = form.dataset.subject ?? "Portfolio contact";
+    const lang = (form.dataset.lang as "es" | "en") ?? "es";
+
+    const submitBtn = form.querySelector<HTMLButtonElement>("[data-submit]")!;
+    const submitLabel = form.querySelector<HTMLElement>("[data-submit-label]")!;
+    const successEl = form.querySelector<HTMLElement>("[data-status-success]")!;
+    const errorEl = form.querySelector<HTMLElement>("[data-status-error]")!;
+    const errorBodyEl = form.querySelector<HTMLElement>("[data-error-body]")!;
+    const resetBtn = form.querySelector<HTMLButtonElement>("[data-form-reset]")!;
+
+    const labels = {
+      submit: submitLabel.textContent ?? "",
+      submitting:
+        lang === "es" ? "Enviando…" : "Sending…",
+      offline:
+        lang === "es"
+          ? "Sin conexión — revisa tu internet e intenta otra vez."
+          : "You're offline — check your internet and try again.",
+      defaultError: errorBodyEl.textContent ?? "",
+      // Per-field error messages mirror the copy in copy.ts.
+      name: lang === "es" ? "Cuéntame tu nombre." : "Tell me your name.",
+      emailRequired:
+        lang === "es" ? "Necesito un email para responderte." : "I'll need an email to reply.",
+      emailInvalid:
+        lang === "es" ? "Ese email no parece válido." : "That email doesn't look right.",
+      message:
+        lang === "es" ? "Escríbeme al menos un par de líneas." : "Write me at least a couple of lines.",
+    };
+
+    const setState = (state: State) => {
+      form.dataset.state = state;
+      submitBtn.dataset.state = state;
+      submitLabel.textContent = state === "submitting" ? labels.submitting : labels.submit;
+      submitBtn.disabled = state === "submitting";
+
+      successEl.hidden = state !== "success";
+      errorEl.hidden = state !== "error";
+    };
+
+    const setFieldError = (name: string, message: string | null) => {
+      const field = form
+        .querySelector<HTMLInputElement | HTMLTextAreaElement>(`[name="${name}"]`)
+        ?.closest<HTMLElement>(".field");
+      if (!field) return;
+      const errorEl = field.querySelector<HTMLElement>(`[data-error-for="${name}"]`);
+      if (message) {
+        field.dataset.invalid = "";
+        if (errorEl) errorEl.textContent = message;
+        const input = field.querySelector<HTMLInputElement | HTMLTextAreaElement>("input,textarea");
+        input?.setAttribute("aria-invalid", "true");
+      } else {
+        delete field.dataset.invalid;
+        if (errorEl) errorEl.textContent = "";
+        const input = field.querySelector<HTMLInputElement | HTMLTextAreaElement>("input,textarea");
+        input?.removeAttribute("aria-invalid");
+      }
+    };
+
+    const validate = (data: { name: string; email: string; message: string }) => {
+      let valid = true;
+      if (data.name.trim().length < 2) {
+        setFieldError("name", labels.name);
+        valid = false;
+      } else {
+        setFieldError("name", null);
+      }
+      if (!data.email.trim()) {
+        setFieldError("email", labels.emailRequired);
+        valid = false;
+      } else if (!EMAIL_RE.test(data.email.trim())) {
+        setFieldError("email", labels.emailInvalid);
+        valid = false;
+      } else {
+        setFieldError("email", null);
+      }
+      if (data.message.trim().length < 10) {
+        setFieldError("message", labels.message);
+        valid = false;
+      } else {
+        setFieldError("message", null);
+      }
+      return valid;
+    };
+
+    // Live-clear errors as the user types so they don't linger.
+    form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>("input,textarea").forEach((el) => {
+      el.addEventListener("input", () => {
+        const field = el.closest<HTMLElement>(".field");
+        if (field?.dataset.invalid !== undefined) {
+          setFieldError(el.name, null);
+        }
+      });
+    });
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const formData = new FormData(form);
+      const data = {
+        name: String(formData.get("name") ?? ""),
+        email: String(formData.get("email") ?? ""),
+        message: String(formData.get("message") ?? ""),
+        botcheck: String(formData.get("botcheck") ?? ""),
+      };
+
+      // Honeypot: silently treat as success without sending.
+      if (data.botcheck) {
+        setState("success");
+        return;
+      }
+
+      if (!validate(data)) return;
+
+      if (!navigator.onLine) {
+        errorBodyEl.textContent = labels.offline;
+        setState("error");
+        return;
+      }
+
+      setState("submitting");
+
+      try {
+        const res = await fetch("https://api.web3forms.com/submit", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({
+            access_key: accessKey,
+            subject,
+            from_name: data.name,
+            name: data.name,
+            email: data.email,
+            message: data.message,
+          }),
+        });
+
+        const json = (await res.json().catch(() => ({}))) as {
+          success?: boolean;
+          message?: string;
+        };
+
+        if (res.ok && json.success) {
+          form.reset();
+          setState("success");
+        } else {
+          errorBodyEl.textContent = json.message || labels.defaultError;
+          setState("error");
+        }
+      } catch {
+        errorBodyEl.textContent = labels.defaultError;
+        setState("error");
+      }
+    });
+
+    resetBtn?.addEventListener("click", () => {
+      setState("idle");
+      const firstInput = form.querySelector<HTMLInputElement>('input[name="name"]');
+      firstInput?.focus();
+    });
+
+    setState("idle");
+  }
+
+  bindContactForm();
+  document.addEventListener("astro:page-load", bindContactForm);
+</script>

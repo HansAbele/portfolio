@@ -1,0 +1,153 @@
+---
+/**
+ * Cursor follower — small glass blob that trails the mouse.
+ * Desktop-only (pointer: fine), respects prefers-reduced-motion.
+ * Pure vanilla, no React. Rendered behind everything (z-index 1, below header).
+ */
+---
+
+<div class="cursor-follower" data-cursor aria-hidden="true">
+  <div class="cursor-dot" data-cursor-dot></div>
+  <div class="cursor-ring" data-cursor-ring></div>
+</div>
+
+<style>
+  .cursor-follower {
+    position: fixed;
+    inset: 0;
+    z-index: 49;
+    pointer-events: none;
+    /* Hidden by default — JS reveals only on fine pointer + no-reduced-motion */
+    display: none;
+  }
+
+  .cursor-follower[data-active] {
+    display: block;
+  }
+
+  .cursor-dot,
+  .cursor-ring {
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-radius: 50%;
+    transform: translate3d(var(--cx, -100px), var(--cy, -100px), 0) translate(-50%, -50%);
+    pointer-events: none;
+    will-change: transform;
+  }
+
+  .cursor-dot {
+    width: 6px;
+    height: 6px;
+    background: var(--accent);
+    box-shadow: 0 0 12px color-mix(in oklab, var(--accent) 60%, transparent);
+    transition: width 0.18s var(--ease-out-quart), height 0.18s var(--ease-out-quart);
+  }
+
+  .cursor-ring {
+    width: 36px;
+    height: 36px;
+    border: 1px solid color-mix(in oklab, var(--accent) 40%, transparent);
+    background: color-mix(in oklab, var(--accent) 8%, transparent);
+    backdrop-filter: blur(6px) saturate(140%);
+    -webkit-backdrop-filter: blur(6px) saturate(140%);
+    transition:
+      width 0.25s var(--ease-out-quart),
+      height 0.25s var(--ease-out-quart),
+      background 0.25s var(--ease-out-quart),
+      border-color 0.25s var(--ease-out-quart);
+  }
+
+  .cursor-follower[data-hover] .cursor-ring {
+    width: 56px;
+    height: 56px;
+    background: color-mix(in oklab, var(--accent) 18%, transparent);
+    border-color: color-mix(in oklab, var(--accent) 70%, transparent);
+  }
+
+  .cursor-follower[data-hover] .cursor-dot {
+    width: 4px;
+    height: 4px;
+  }
+</style>
+
+<script>
+  function bindCursorFollower() {
+    if (typeof window === "undefined") return;
+
+    const fine = window.matchMedia("(pointer: fine)").matches;
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (!fine || reducedMotion) return;
+
+    const root = document.querySelector<HTMLElement>("[data-cursor]");
+    if (!root) return;
+
+    const dot = root.querySelector<HTMLElement>("[data-cursor-dot]")!;
+    const ring = root.querySelector<HTMLElement>("[data-cursor-ring]")!;
+
+    let mx = -100;
+    let my = -100;
+    let dotX = -100;
+    let dotY = -100;
+    let ringX = -100;
+    let ringY = -100;
+    let raf = 0;
+    let active = false;
+
+    const tick = () => {
+      // Dot snaps almost instantly; ring lags for a soft trailing feel.
+      dotX += (mx - dotX) * 0.55;
+      dotY += (my - dotY) * 0.55;
+      ringX += (mx - ringX) * 0.18;
+      ringY += (my - ringY) * 0.18;
+
+      dot.style.setProperty("--cx", `${dotX}px`);
+      dot.style.setProperty("--cy", `${dotY}px`);
+      ring.style.setProperty("--cx", `${ringX}px`);
+      ring.style.setProperty("--cy", `${ringY}px`);
+
+      raf = requestAnimationFrame(tick);
+    };
+
+    const activate = () => {
+      if (active) return;
+      active = true;
+      root.dataset.active = "";
+      raf = requestAnimationFrame(tick);
+    };
+
+    window.addEventListener(
+      "mousemove",
+      (e) => {
+        mx = e.clientX;
+        my = e.clientY;
+        if (!active) activate();
+      },
+      { passive: true }
+    );
+
+    // Hover state for interactive elements — pulls the ring wider.
+    const interactiveSel = "a, button, [role='button'], summary, .project-card, .social, .btn";
+    document.addEventListener("mouseover", (e) => {
+      const target = e.target as HTMLElement;
+      if (target.closest(interactiveSel)) {
+        root.dataset.hover = "";
+      }
+    });
+    document.addEventListener("mouseout", (e) => {
+      const target = e.target as HTMLElement;
+      if (target.closest(interactiveSel)) {
+        delete root.dataset.hover;
+      }
+    });
+
+    // Hide entirely when the cursor leaves the document.
+    document.addEventListener("mouseleave", () => {
+      mx = -100;
+      my = -100;
+    });
+  }
+
+  bindCursorFollower();
+  document.addEventListener("astro:page-load", bindCursorFollower);
+</script>

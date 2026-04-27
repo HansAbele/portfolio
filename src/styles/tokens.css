@@ -1,0 +1,66 @@
+/* Design tokens — ported from Portfolio/styles.css
+   Single source of truth for colors, spacing, blur, shadows. */
+
+:root {
+  /* Surfaces — light theme (default) */
+  --bg: #f5f3ee;
+  --bg-2: #ffffff;
+  --ink: #161618;
+  --ink-2: #2c2c30;
+  --muted: #6b6b73;
+  --muted-2: #9a9aa3;
+
+  --line: rgba(22, 22, 24, 0.08);
+  --line-2: rgba(22, 22, 24, 0.14);
+
+  --glass: rgba(255, 255, 255, 0.55);
+  --glass-2: rgba(255, 255, 255, 0.72);
+  --glass-stroke: rgba(255, 255, 255, 0.65);
+  --glass-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.7) inset,
+    0 30px 60px -20px rgba(40, 30, 80, 0.18),
+    0 8px 16px -8px rgba(40, 30, 80, 0.10);
+
+  /* Accent — violet palette (default) */
+  --accent: #6b5cff;
+  --accent-2: #ff8aa6;
+  --accent-3: #7cc4ff;
+
+  /* Bubble palette — sunrise (default) */
+  --bubble-1: #ffb3c7;
+  --bubble-2: #c5b8ff;
+  --bubble-3: #b9e0ff;
+  --bubble-4: #ffd6a8;
+  --bubble-5: #d6f3e0;
+
+  /* Effect controls */
+  --blur: 64px;
+  --bubble-opacity: 0.55;
+
+  /* Shape */
+  --radius: 22px;
+  --radius-sm: 14px;
+
+  /* Motion */
+  --ease-out-quart: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+[data-theme="dark"] {
+  --bg: #0d0c12;
+  --bg-2: #14131c;
+  --ink: #f1eeff;
+  --ink-2: #d6d2e6;
+  --muted: #9a93b5;
+  --muted-2: #6e6884;
+
+  --line: rgba(255, 255, 255, 0.08);
+  --line-2: rgba(255, 255, 255, 0.14);
+
+  --glass: rgba(28, 25, 42, 0.55);
+  --glass-2: rgba(28, 25, 42, 0.72);
+  --glass-stroke: rgba(255, 255, 255, 0.10);
+  --glass-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.05) inset,
+    0 30px 60px -20px rgba(0, 0, 0, 0.5),
+    0 8px 16px -8px rgba(0, 0, 0, 0.3);
+}

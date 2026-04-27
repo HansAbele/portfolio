@@ -1,0 +1,100 @@
+---
+/**
+ * TechChip — small pill that shows a tech logo + its name.
+ *
+ * Picks an icon from the registry in `src/data/tech.ts`. If the tech name
+ * has no entry, falls back to a text-only chip — so unrecognized tech
+ * never breaks the layout.
+ *
+ * Variants:
+ *   size="sm" → 11.5px text, 14px icon (used inside Experience/Projects tag rows)
+ *   size="md" → 13px text, 16px icon (default — Stack section)
+ */
+import { Icon } from "astro-icon/components";
+import { getTechIcon } from "../data/tech";
+
+interface Props {
+  name: string;
+  size?: "sm" | "md";
+}
+
+const { name, size = "md" } = Astro.props;
+const iconName = getTechIcon(name);
+
+// `simple-icons:*` and `lucide:*` are monochrome — they pick up `currentColor`,
+// so we tint them via CSS. `devicon:*` ships with brand colors baked in.
+const isMono =
+  iconName?.startsWith("simple-icons:") || iconName?.startsWith("lucide:");
+---
+
+<span class:list={["tech-chip", `tech-chip-${size}`, { "tech-chip-mono": isMono }]}>
+  {iconName && (
+    <Icon name={iconName} class="tech-chip-icon" aria-hidden="true" />
+  )}
+  <span class="tech-chip-name">{name}</span>
+</span>
+
+<style>
+  .tech-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 11px;
+    border-radius: 999px;
+    background: var(--glass-2);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--line-2);
+    font-family: var(--font-mono);
+    color: var(--ink-2);
+    letter-spacing: 0.01em;
+    line-height: 1;
+    transition:
+      transform 0.2s var(--ease-out-quart),
+      border-color 0.2s var(--ease-out-quart),
+      background 0.2s var(--ease-out-quart);
+  }
+
+  .tech-chip:hover {
+    transform: translateY(-1px);
+    border-color: color-mix(in oklab, var(--accent) 35%, var(--line-2));
+  }
+
+  .tech-chip-md {
+    font-size: 12.5px;
+    padding: 7px 12px;
+  }
+
+  .tech-chip-sm {
+    font-size: 11px;
+    padding: 4px 9px;
+    gap: 5px;
+  }
+
+  .tech-chip-icon {
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+  }
+
+  .tech-chip-sm .tech-chip-icon {
+    width: 13px;
+    height: 13px;
+  }
+
+  /* Monochrome icons inherit the accent color so they don't disappear
+     into the muted text. Devicon icons keep their brand colors. */
+  .tech-chip-mono .tech-chip-icon {
+    color: var(--accent);
+  }
+
+  /* In dark mode, soften pure-white monochrome glyphs so they don't
+     punch through the glass — the simple-icons set ships as currentColor. */
+  :global([data-theme="dark"]) .tech-chip-mono .tech-chip-icon {
+    color: #b6acff;
+  }
+
+  .tech-chip-name {
+    white-space: nowrap;
+  }
+</style>

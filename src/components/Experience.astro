@@ -1,0 +1,270 @@
+---
+/**
+ * Experience timeline — one expandable card per role.
+ *
+ * Was originally a React island for the open/close animation, but was
+ * simplified to vanilla Astro + a small toggle script so the tech chips
+ * inside (Astro-only TechChip component) can render server-side.
+ * The smooth height animation is now done with CSS height transition.
+ */
+import { COPY, type Lang } from "../data/copy";
+import TechChip from "./TechChip.astro";
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = "es" } = Astro.props;
+const t = COPY[lang];
+---
+
+<section id="experience" class="experience" aria-labelledby="experience-title">
+  <div class="container">
+    <p class="eyebrow">
+      <span><span class="num">02</span> / {t.experience.title}</span>
+    </p>
+    <h2 id="experience-title" class="section-title">{t.experience.title}</h2>
+
+    <div class="exp-list">
+      {t.experience.items.map((item, i) => (
+        <article class="card exp-card" data-exp-card>
+          <header class="exp-head">
+            <div>
+              <h3 class="exp-role">{item.role}</h3>
+              <p class="exp-company">{item.company}</p>
+            </div>
+            <time class="exp-period">{item.period}</time>
+          </header>
+
+          {/* Source is our static copy data — `<strong>` for product names is safe. */}
+          <p class="exp-summary" set:html={item.summary} />
+
+          <button
+            type="button"
+            class="exp-toggle"
+            data-exp-toggle
+            aria-expanded="false"
+            aria-controls={`exp-more-${i}`}
+            data-more-label={t.experience.more}
+            data-less-label={t.experience.less}
+          >
+            <span data-toggle-label>{t.experience.more}</span>
+            <span class="exp-toggle-caret" aria-hidden="true">↓</span>
+          </button>
+
+          <div
+            class="exp-more"
+            id={`exp-more-${i}`}
+            data-exp-more
+            hidden
+          >
+            <p class="exp-more-text">{item.more}</p>
+          </div>
+
+          <ul class="exp-stack" aria-label="Stack">
+            {item.stack.map((tech) => (
+              <li><TechChip name={tech} size="sm" /></li>
+            ))}
+          </ul>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .exp-list {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+
+  .exp-card {
+    padding: 32px 36px;
+  }
+
+  .exp-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 18px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+
+  .exp-role {
+    font-size: 19px;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    margin: 0 0 4px;
+    color: var(--ink);
+  }
+
+  .exp-company {
+    font-size: 14.5px;
+    color: var(--muted);
+    margin: 0;
+  }
+
+  .exp-period {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+    align-self: flex-start;
+    padding-top: 4px;
+  }
+
+  .exp-summary {
+    color: var(--ink-2);
+    font-size: 15px;
+    line-height: 1.65;
+    margin: 0 0 8px;
+  }
+
+  .exp-summary :global(strong) {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .exp-toggle {
+    background: transparent;
+    border: 0;
+    padding: 0;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--accent);
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    letter-spacing: 0.04em;
+    margin-top: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .exp-toggle:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  .exp-toggle-caret {
+    transition: transform 0.25s var(--ease-out-quart);
+  }
+
+  .exp-toggle[aria-expanded="true"] .exp-toggle-caret {
+    transform: rotate(180deg);
+  }
+
+  /* Animated height — toggled via JS by setting an explicit height first
+     so the `auto` → 0 transition can be measured. */
+  .exp-more {
+    overflow: hidden;
+    height: 0;
+    opacity: 0;
+    transition:
+      height 0.4s var(--ease-out-quart),
+      opacity 0.3s var(--ease-out-quart);
+  }
+
+  .exp-more[data-open] {
+    opacity: 1;
+  }
+
+  .exp-more-text {
+    color: var(--ink-2);
+    font-size: 15px;
+    line-height: 1.65;
+    margin: 12px 0 0;
+  }
+
+  .exp-stack {
+    margin: 18px 0 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  @media (max-width: 860px) {
+    .exp-card {
+      padding: 26px;
+    }
+  }
+</style>
+
+<script>
+  /**
+   * Experience card toggle — animates a `[data-exp-more]` panel open/closed
+   * with a real height transition by measuring scrollHeight on each click.
+   * Re-binds on `astro:page-load` for view transitions.
+   */
+  function bindExperienceToggles() {
+    if (typeof window === "undefined") return;
+
+    const toggles = document.querySelectorAll<HTMLButtonElement>("[data-exp-toggle]");
+    toggles.forEach((btn) => {
+      // Idempotent: skip if we've already bound to this button.
+      if (btn.dataset.bound) return;
+      btn.dataset.bound = "1";
+
+      const card = btn.closest<HTMLElement>("[data-exp-card]");
+      const panel = card?.querySelector<HTMLElement>("[data-exp-more]");
+      const label = btn.querySelector<HTMLElement>("[data-toggle-label]");
+      if (!card || !panel || !label) return;
+
+      const moreLabel = btn.dataset.moreLabel ?? "more";
+      const lessLabel = btn.dataset.lessLabel ?? "less";
+
+      btn.addEventListener("click", () => {
+        const isOpen = btn.getAttribute("aria-expanded") === "true";
+
+        if (isOpen) {
+          // Closing: lock current height, then animate to 0
+          panel.style.height = `${panel.scrollHeight}px`;
+          // Force reflow so the next change actually transitions.
+          panel.offsetHeight;
+          panel.style.height = "0px";
+          delete panel.dataset.open;
+
+          // After the transition, hide for accessibility tools.
+          panel.addEventListener(
+            "transitionend",
+            () => {
+              if (btn.getAttribute("aria-expanded") === "false") {
+                panel.hidden = true;
+              }
+            },
+            { once: true }
+          );
+        } else {
+          panel.hidden = false;
+          // Opening: animate from 0 to scrollHeight, then lock to auto
+          panel.style.height = "0px";
+          panel.offsetHeight;
+          panel.style.height = `${panel.scrollHeight}px`;
+          panel.dataset.open = "";
+
+          panel.addEventListener(
+            "transitionend",
+            () => {
+              if (btn.getAttribute("aria-expanded") === "true") {
+                panel.style.height = "auto";
+              }
+            },
+            { once: true }
+          );
+        }
+
+        btn.setAttribute("aria-expanded", String(!isOpen));
+        label.textContent = isOpen ? moreLabel : lessLabel;
+      });
+    });
+  }
+
+  bindExperienceToggles();
+  document.addEventListener("astro:page-load", bindExperienceToggles);
+</script>

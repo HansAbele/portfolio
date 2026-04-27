@@ -1,0 +1,181 @@
+---
+import { COPY, type Lang } from "../data/copy";
+import TechChip from "./TechChip.astro";
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = "es" } = Astro.props;
+const t = COPY[lang];
+
+const padNum = (i: number) => String(i + 1).padStart(2, "0");
+---
+
+<section id="projects" class="projects" aria-labelledby="projects-title">
+  <div class="container">
+    <p class="eyebrow">
+      <span><span class="num">03</span> / {t.projects.title}</span>
+    </p>
+    <h2 id="projects-title" class="section-title">{t.projects.title}</h2>
+
+    <div class="projects-grid">
+      {t.projects.items.map((project, i) => (
+        <article class="card project-card">
+          <div class="project-num">{padNum(i)}</div>
+
+          <div class="project-body">
+            <h3 class="project-name">
+              <span>{project.name}</span>
+              <span class="arrow" aria-hidden="true">↗</span>
+            </h3>
+            <p class="project-tag">{project.tag}</p>
+            <p class="project-desc">{project.desc}</p>
+
+            <ul class="project-stack" aria-label="Stack">
+              {project.stack.map((tech) => (
+                <li><TechChip name={tech} size="sm" /></li>
+              ))}
+            </ul>
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .projects-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 22px;
+  }
+
+  .project-card {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: 24px;
+    padding: 32px 36px;
+    position: relative;
+    overflow: hidden;
+    transition:
+      transform 0.3s var(--ease-out-quart),
+      box-shadow 0.3s var(--ease-out-quart);
+  }
+
+  /* Shine sweep — diagonal highlight that travels across the card on hover */
+  .project-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      115deg,
+      transparent 30%,
+      rgba(255, 255, 255, 0.18) 48%,
+      rgba(255, 255, 255, 0.28) 50%,
+      rgba(255, 255, 255, 0.18) 52%,
+      transparent 70%
+    );
+    transform: translateX(-110%);
+    transition: transform 0.9s var(--ease-out-quart);
+    pointer-events: none;
+    mix-blend-mode: overlay;
+    border-radius: inherit;
+  }
+
+  :global([data-theme="dark"]) .project-card::after {
+    background: linear-gradient(
+      115deg,
+      transparent 30%,
+      rgba(255, 255, 255, 0.06) 48%,
+      rgba(255, 255, 255, 0.14) 50%,
+      rgba(255, 255, 255, 0.06) 52%,
+      transparent 70%
+    );
+    mix-blend-mode: screen;
+  }
+
+  .project-card:hover {
+    transform: translateY(-3px);
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.7) inset,
+      0 40px 70px -20px rgba(40, 30, 80, 0.22);
+  }
+
+  .project-card:hover::after {
+    transform: translateX(110%);
+  }
+
+  .project-num {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--muted-2);
+    letter-spacing: 0.06em;
+    border-top: 1px solid var(--line);
+    padding-top: 8px;
+    align-self: start;
+  }
+
+  .project-body {
+    min-width: 0;
+  }
+
+  .project-name {
+    font-size: 24px;
+    letter-spacing: -0.025em;
+    font-weight: 600;
+    margin: 0 0 4px;
+    color: var(--ink);
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .project-name .arrow {
+    font-size: 16px;
+    color: var(--accent);
+    transition: transform 0.2s var(--ease-out-quart);
+    display: inline-block;
+  }
+
+  .project-card:hover .arrow {
+    transform: translate(2px, -2px);
+  }
+
+  .project-tag {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+    margin: 0 0 14px;
+    text-transform: uppercase;
+  }
+
+  .project-desc {
+    color: var(--ink-2);
+    font-size: 14.5px;
+    line-height: 1.65;
+    margin: 0 0 18px;
+  }
+
+  .project-stack {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  @media (max-width: 860px) {
+    .project-card {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+    .project-num {
+      border-top: 0;
+      padding-top: 0;
+    }
+  }
+</style>

@@ -1,0 +1,232 @@
+---
+import { Image } from "astro:assets";
+import { COPY, SOCIALS, type Lang } from "../data/copy";
+import johanPhoto from "../assets/johan.png";
+import IconArrow from "./icons/IconArrow.astro";
+import IconMail from "./icons/IconMail.astro";
+import IconLinkedin from "./icons/IconLinkedin.astro";
+import IconGithub from "./icons/IconGithub.astro";
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = "es" } = Astro.props;
+const t = COPY[lang];
+---
+
+<section class="hero" id="home" aria-label={t.hero.greeting}>
+  <div class="container hero-grid">
+    <div class="hero-text">
+      <h1>
+        {t.hero.greeting}
+        <br />
+        <span class="bracket" aria-hidden="true">‹</span><span class="name">Johan</span><span class="bracket" aria-hidden="true">›</span>
+      </h1>
+
+      <p class="hero-lede">
+        <strong>{t.hero.role}</strong>
+        {" "}{t.hero.intro}
+      </p>
+
+      <div class="hero-actions">
+        <a href="#contact" class="btn btn-primary">
+          {t.hero.cta}
+          <IconArrow size={14} />
+        </a>
+
+        <ul class="socials" aria-label="Redes">
+          <li>
+            <a class="social" href={SOCIALS.email} aria-label="Email">
+              <IconMail size={16} />
+            </a>
+          </li>
+          <li>
+            <a class="social" href={SOCIALS.linkedin} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+              <IconLinkedin size={16} />
+            </a>
+          </li>
+          <li>
+            <a class="social" href={SOCIALS.github} target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+              <IconGithub size={16} />
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="hero-photo">
+      <div class="blob" aria-hidden="true"></div>
+      <div class="frame">
+        <Image
+          src={johanPhoto}
+          alt="Foto de Johan Taveras"
+          width={760}
+          height={760}
+          loading="eager"
+          format="webp"
+          quality={85}
+        />
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-scroll" aria-hidden="true">
+    <span class="line"></span>
+    <span>{t.hero.scroll}</span>
+    <span class="line"></span>
+  </div>
+</section>
+
+<style>
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 140px 0 80px;
+    position: relative;
+  }
+
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1.25fr 1fr;
+    gap: 64px;
+    align-items: center;
+    width: 100%;
+  }
+
+  h1 {
+    font-size: clamp(48px, 7vw, 88px);
+    line-height: 0.98;
+    letter-spacing: -0.035em;
+    font-weight: 700;
+    margin: 0 0 28px;
+    color: var(--ink);
+  }
+
+  .name {
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2) 60%, var(--accent-3));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    letter-spacing: -0.04em;
+  }
+
+  .bracket {
+    color: var(--muted-2);
+    font-weight: 300;
+  }
+
+  .hero-lede {
+    font-size: 18px;
+    line-height: 1.55;
+    color: var(--ink-2);
+    max-width: 460px;
+    margin: 0 0 36px;
+  }
+
+  .hero-lede strong {
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .socials {
+    list-style: none;
+    margin: 0 0 0 4px;
+    padding: 0;
+    display: flex;
+    gap: 6px;
+  }
+
+  .hero-photo {
+    position: relative;
+    justify-self: end;
+    width: min(380px, 100%);
+    aspect-ratio: 1;
+  }
+
+  .blob {
+    position: absolute;
+    inset: -40px;
+    border-radius: 50%;
+    background: conic-gradient(from 120deg, var(--accent-2), var(--accent), var(--accent-3), var(--accent-2));
+    filter: blur(40px);
+    opacity: 0.45;
+    animation: spin 20s linear infinite;
+    will-change: transform;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .frame {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    overflow: hidden;
+    background: var(--glass-2);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-stroke);
+    box-shadow: var(--glass-shadow);
+  }
+
+  .frame :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .hero-scroll {
+    position: absolute;
+    bottom: 36px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .hero-scroll .line {
+    width: 28px;
+    height: 1px;
+    background: currentColor;
+    opacity: 0.5;
+  }
+
+  @media (max-width: 860px) {
+    .hero {
+      padding: 130px 0 60px;
+    }
+    .hero-grid {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+    .hero-photo {
+      order: -1;
+      width: 220px;
+      justify-self: start;
+    }
+    .hero-scroll {
+      display: none;
+    }
+  }
+</style>
