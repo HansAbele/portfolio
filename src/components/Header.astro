@@ -26,7 +26,6 @@ const langLabel = lang === "es" ? "Idioma" : "Language";
 
 <header class="header" aria-label={lang === "es" ? "Navegación principal" : "Primary navigation"}>
   <a href={lang === "en" ? "/" : "/es"} class="header-brand" aria-label={lang === "es" ? "Johan Taveras — inicio" : "Johan Taveras — home"}>
-    <span class="header-brand-dot" aria-hidden="true"></span>
     <span>Johan Taveras</span>
   </a>
 
@@ -115,14 +114,6 @@ const langLabel = lang === "es" ? "Idioma" : "Language";
     align-items: center;
     gap: 8px;
     text-decoration: none;
-  }
-
-  .header-brand-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--accent), var(--accent-2));
-    box-shadow: 0 0 12px var(--accent);
   }
 
   nav {
