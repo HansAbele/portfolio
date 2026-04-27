@@ -58,6 +58,11 @@ export interface Copy {
   };
   footer: { credit: string; build: string };
   sections: { about: string; experience: string; projects: string; stack: string; contact: string };
+  a11y: {
+    skipToContent: string;
+    socials: string;
+    photoAlt: string;
+  };
 }
 
 export const COPY: Record<Lang, Copy> = {
@@ -203,6 +208,11 @@ export const COPY: Record<Lang, Copy> = {
       stack: "Stack técnico",
       contact: "Contacto",
     },
+    a11y: {
+      skipToContent: "Saltar al contenido",
+      socials: "Redes sociales",
+      photoAlt: "Foto de Johan Taveras",
+    },
   },
   en: {
     nav: {
@@ -345,6 +355,11 @@ export const COPY: Record<Lang, Copy> = {
       projects: "Featured projects",
       stack: "Tech stack",
       contact: "Contact",
+    },
+    a11y: {
+      skipToContent: "Skip to content",
+      socials: "Social links",
+      photoAlt: "Photo of Johan Taveras",
     },
   },
 };

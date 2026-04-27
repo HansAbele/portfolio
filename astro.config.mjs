@@ -15,8 +15,10 @@ export default defineConfig({
     defaultStrategy: 'viewport',
   },
   i18n: {
-    defaultLocale: 'es',
-    locales: ['es', 'en'],
+    // English is the default — the site targets an English-speaking
+    // audience first; Spanish (/es) is the secondary locale for LATAM.
+    defaultLocale: 'en',
+    locales: ['en', 'es'],
     routing: {
       prefixDefaultLocale: false,
     },

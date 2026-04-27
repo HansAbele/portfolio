@@ -4,30 +4,39 @@ import "@fontsource-variable/jetbrains-mono";
 import "../styles/global.css";
 import BubbleBackground from "../components/BubbleBackground.astro";
 import CursorFollower from "../components/CursorFollower.astro";
+import { COPY, type Lang } from "../data/copy";
+// Resolve the Inter Variable woff2 URL via Vite so the preload `<link>`
+// points to the exact hashed asset the browser will fetch.
+import interLatin from "@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url";
 
 interface Props {
   title: string;
   description?: string;
-  lang?: "es" | "en";
+  lang?: Lang;
 }
 
 const {
   title,
-  description = "Johan Taveras — Ingeniero Full-Stack. Sistemas internos, IA aplicada y software que mueve operaciones reales.",
-  lang = "es",
+  description = "Johan Taveras — Full-Stack Engineer. Internal systems, applied AI, and software that powers real operations.",
+  lang = "en",
 } = Astro.props;
+
+const t = COPY[lang];
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site).toString();
 
-// hreflang alternates: /  ⇄ /en
-const altPath = lang === "es" ? "/en/" : "/";
+// hreflang alternates: /  ⇄ /es
+// English is the default — `/` serves EN, `/es` serves ES.
+// x-default points at `/` so search engines fall back to English for
+// users whose language doesn't match either alternate.
+const altPath = lang === "en" ? "/es" : "/";
 const altURL = new URL(altPath, Astro.site).toString();
-const altLang = lang === "es" ? "en" : "es";
+const altLang = lang === "en" ? "es" : "en";
 const xDefaultURL = new URL("/", Astro.site).toString();
 ---
 
 <!doctype html>
-<html lang={lang} data-theme="light">
+<html lang={lang} dir="ltr" data-theme="light">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -43,11 +52,21 @@ const xDefaultURL = new URL("/", Astro.site).toString();
     <link rel="alternate" hreflang={altLang} href={altURL} />
     <link rel="alternate" hreflang="x-default" href={xDefaultURL} />
 
+    {/* Preload the variable Latin font so LCP text doesn't FOUT.
+        crossorigin is required for font preload, even same-origin. */}
+    <link
+      rel="preload"
+      href={interLatin}
+      as="font"
+      type="font/woff2"
+      crossorigin="anonymous"
+    />
+
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonicalURL} />
-    <meta property="og:locale" content={lang === "es" ? "es_DO" : "en_US"} />
+    <meta property="og:locale" content={lang === "en" ? "en_US" : "es_DO"} />
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
@@ -81,10 +100,17 @@ const xDefaultURL = new URL("/", Astro.site).toString();
   </head>
 
   <body>
+    {/* Skip link — must be the first focusable element so keyboard users
+        can jump past the header on every page load. */}
+    <a href="#main" class="skip-link">{t.a11y.skipToContent}</a>
+
     <BubbleBackground />
     <CursorFollower />
+
     <div class="app">
-      <slot />
+      <main id="main" tabindex="-1">
+        <slot />
+      </main>
     </div>
 
     <script>

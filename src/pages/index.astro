@@ -10,10 +10,14 @@ import Contact from "../components/Contact.astro";
 import Footer from "../components/Footer.astro";
 import Reveal from "../components/Reveal.astro";
 
-const lang = "es" as const;
+const lang = "en" as const;
 ---
 
-<Layout title="Johan Taveras — Ingeniero Full-Stack" lang={lang}>
+<Layout
+  title="Johan Taveras — Full-Stack Engineer"
+  description="Johan Taveras — Full-Stack Engineer. Internal systems, applied AI, and software that powers real operations."
+  lang={lang}
+>
   <Header lang={lang} />
   <Reveal><Hero lang={lang} /></Reveal>
   <Reveal><About lang={lang} /></Reveal>

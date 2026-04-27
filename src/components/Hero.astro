@@ -35,7 +35,7 @@ const t = COPY[lang];
           <IconArrow size={14} />
         </a>
 
-        <ul class="socials" aria-label="Redes">
+        <ul class="socials" aria-label={t.a11y.socials}>
           <li>
             <a class="social" href={SOCIALS.email} aria-label="Email">
               <IconMail size={16} />
@@ -60,10 +60,11 @@ const t = COPY[lang];
       <div class="frame">
         <Image
           src={johanPhoto}
-          alt="Foto de Johan Taveras"
+          alt={t.a11y.photoAlt}
           width={760}
           height={760}
           loading="eager"
+          fetchpriority="high"
           format="webp"
           quality={85}
         />

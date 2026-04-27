@@ -77,6 +77,57 @@ video {
   color: var(--ink);
 }
 
+/* Global focus-visible fallback — every interactive element gets at least
+   a visible accent outline when reached via keyboard. Components that want
+   a custom focus ring can override (e.g. .btn, .social, .lang-link). */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+summary:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* Remove the focus ring on the <main> landmark — it's only there to be
+   targetable by the skip link, never genuinely focused. */
+main:focus,
+main:focus-visible {
+  outline: none;
+}
+
+/* Skip-to-content link — invisible until focused via keyboard, then
+   slides into view at the top-left as a prominent accent pill. */
+.skip-link {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 100;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  box-shadow: 0 12px 28px -10px rgba(40, 30, 80, 0.45);
+  /* Hide off-screen until focused */
+  transform: translateY(-150%);
+  transition: transform 0.25s var(--ease-out-quart);
+}
+
+.skip-link:focus,
+.skip-link:focus-visible {
+  transform: translateY(0);
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+
 /* App container */
 .app {
   position: relative;
