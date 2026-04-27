@@ -108,24 +108,7 @@ const tree = {
             "Internal systems, applied AI, and software that powers real operations.",
         },
       },
-      // Bottom-right URL
-      {
-        type: "div",
-        props: {
-          style: {
-            display: "flex",
-            position: "absolute",
-            bottom: 50,
-            right: 80,
-            fontSize: 22,
-            fontWeight: 400,
-            color: "#5e5e66",
-            letterSpacing: "0.04em",
-          },
-          children: "johantaveras.vercel.app",
-        },
-      },
-      // Bottom-left accent dot row
+      // Bottom-left: accent dot row + URL
       {
         type: "div",
         props: {
@@ -134,20 +117,55 @@ const tree = {
             position: "absolute",
             bottom: 50,
             left: 80,
-            gap: 8,
+            alignItems: "center",
+            gap: 16,
           },
           children: [
             {
               type: "div",
               props: {
-                style: {
-                  display: "flex",
-                  width: 10,
-                  height: 10,
-                  borderRadius: 5,
-                  backgroundColor: "#6b5cff",
-                },
-                children: "",
+                style: { display: "flex", gap: 8 },
+                children: [
+                  {
+                    type: "div",
+                    props: {
+                      style: {
+                        display: "flex",
+                        width: 10,
+                        height: 10,
+                        borderRadius: 5,
+                        backgroundColor: "#6b5cff",
+                      },
+                      children: "",
+                    },
+                  },
+                  {
+                    type: "div",
+                    props: {
+                      style: {
+                        display: "flex",
+                        width: 10,
+                        height: 10,
+                        borderRadius: 5,
+                        backgroundColor: "#ff8aa6",
+                      },
+                      children: "",
+                    },
+                  },
+                  {
+                    type: "div",
+                    props: {
+                      style: {
+                        display: "flex",
+                        width: 10,
+                        height: 10,
+                        borderRadius: 5,
+                        backgroundColor: "#7cc4ff",
+                      },
+                      children: "",
+                    },
+                  },
+                ],
               },
             },
             {
@@ -155,28 +173,37 @@ const tree = {
               props: {
                 style: {
                   display: "flex",
-                  width: 10,
-                  height: 10,
-                  borderRadius: 5,
-                  backgroundColor: "#ff8aa6",
+                  fontSize: 22,
+                  fontWeight: 400,
+                  color: "#5e5e66",
+                  letterSpacing: "0.04em",
                 },
-                children: "",
-              },
-            },
-            {
-              type: "div",
-              props: {
-                style: {
-                  display: "flex",
-                  width: 10,
-                  height: 10,
-                  borderRadius: 5,
-                  backgroundColor: "#7cc4ff",
-                },
-                children: "",
+                children: "johantaveras.vercel.app",
               },
             },
           ],
+        },
+      },
+      // Bottom-right: CTA pill
+      {
+        type: "div",
+        props: {
+          style: {
+            display: "flex",
+            position: "absolute",
+            bottom: 42,
+            right: 80,
+            alignItems: "center",
+            gap: 10,
+            padding: "16px 28px",
+            borderRadius: 999,
+            backgroundColor: "#161618",
+            color: "#ffffff",
+            fontSize: 24,
+            fontWeight: 700,
+            letterSpacing: "-0.01em",
+          },
+          children: "Get in touch ›",
         },
       },
     ],
