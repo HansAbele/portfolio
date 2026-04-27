@@ -67,17 +67,43 @@ const langLabel = lang === "es" ? "Idioma" : "Language";
     left: 50%;
     transform: translateX(-50%);
     z-index: 50;
-    width: min(960px, calc(100% - 32px));
+    /* Wider than the page container (1080px) so the floating header
+       reads as a top-level rail rather than a pill nested inside the content. */
+    width: min(1180px, calc(100% - 32px));
     padding: 8px 10px 8px 22px;
     border-radius: 999px;
-    background: var(--glass-2);
-    backdrop-filter: blur(20px) saturate(140%);
-    -webkit-backdrop-filter: blur(20px) saturate(140%);
-    border: 1px solid var(--glass-stroke);
-    box-shadow: var(--glass-shadow);
+    /* Real frosted-glass: low alpha so shapes/colors behind read through,
+       heavy blur so any text behind is recognizable but not legible,
+       and a subtle top-to-bottom gradient that mimics a light catch on
+       the upper edge of the glass. */
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.22) 0%,
+      rgba(255, 255, 255, 0.08) 100%
+    );
+    backdrop-filter: blur(10px) saturate(200%);
+    -webkit-backdrop-filter: blur(10px) saturate(200%);
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.6) inset,
+      0 18px 40px -16px rgba(40, 30, 80, 0.18),
+      0 6px 14px -8px rgba(40, 30, 80, 0.10);
     display: flex;
     align-items: center;
     gap: 12px;
+  }
+
+  :global([data-theme="dark"]) .header {
+    background: linear-gradient(
+      180deg,
+      rgba(40, 36, 60, 0.24) 0%,
+      rgba(20, 19, 28, 0.12) 100%
+    );
+    border-color: rgba(255, 255, 255, 0.10);
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.06) inset,
+      0 18px 40px -16px rgba(0, 0, 0, 0.55),
+      0 6px 14px -8px rgba(0, 0, 0, 0.35);
   }
 
   .header-brand {
@@ -203,7 +229,10 @@ const langLabel = lang === "es" ? "Idioma" : "Language";
    * so /#projects ⇄ /en#projects.
    */
   function bindLangPreserveHash() {
-    const links = document.querySelectorAll<HTMLAnchorElement>("[data-lang]");
+    // Scope selector to anchors only — other elements (e.g. the contact form)
+    // also use [data-lang] for localization, and matching them here used to
+    // attach a phantom click listener that swallowed the form's submit event.
+    const links = document.querySelectorAll<HTMLAnchorElement>("a[data-lang]");
     links.forEach((link) => {
       link.addEventListener("click", (event) => {
         const hash = window.location.hash;

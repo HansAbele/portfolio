@@ -186,7 +186,7 @@ export const COPY: Record<Lang, Copy> = {
         },
         error: {
           title: "Algo salió mal",
-          body: "No pude enviar el mensaje. Intenta de nuevo o escríbeme directo a johanhapusa@gmail.com.",
+          body: "No pude enviar el mensaje. Intenta de nuevo o escríbeme directo a jtzorinos@gmail.com.",
         },
         offline: "Sin conexión — revisa tu internet e intenta otra vez.",
         orMail: "o escríbeme directo a",
@@ -329,7 +329,7 @@ export const COPY: Record<Lang, Copy> = {
         },
         error: {
           title: "Something went wrong",
-          body: "Couldn't send your message. Try again or email me directly at johanhapusa@gmail.com.",
+          body: "Couldn't send your message. Try again or email me directly at jtzorinos@gmail.com.",
         },
         offline: "You're offline — check your internet and try again.",
         orMail: "or email me directly at",
@@ -350,7 +350,7 @@ export const COPY: Record<Lang, Copy> = {
 };
 
 export const SOCIALS = {
-  email: "mailto:johanhapusa@gmail.com",
+  email: "mailto:jtzorinos@gmail.com",
   linkedin: "https://www.linkedin.com/in/johan-abel-taveras-21a2311b6/",
   github: "https://github.com/HansAbele",
 } as const;
