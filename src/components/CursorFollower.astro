@@ -69,6 +69,26 @@
     width: 4px;
     height: 4px;
   }
+
+  /* Text-hover state — the ring grows into a soft white "spotlight" with
+     mix-blend-mode: difference. The blend inverts whatever's underneath,
+     so the cursor reads as high-contrast over any color (light bg, dark
+     text, accent shapes — all auto-adapt). The dot fades out so the
+     spotlight is the only thing the eye tracks. */
+  .cursor-follower[data-text] .cursor-ring {
+    width: 64px;
+    height: 64px;
+    background: rgba(255, 255, 255, 0.92);
+    border-color: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    mix-blend-mode: difference;
+  }
+
+  .cursor-follower[data-text] .cursor-dot {
+    opacity: 0;
+    transition: opacity 0.18s var(--ease-out-quart);
+  }
 </style>
 
 <script>
@@ -126,18 +146,32 @@
       { passive: true }
     );
 
-    // Hover state for interactive elements — pulls the ring wider.
-    const interactiveSel = "a, button, [role='button'], summary, .project-card, .social, .btn";
+    // Two distinct hover modes:
+    //   interactive (link/button/card)  → ring gets wider + accent stays
+    //   text       (paragraphs, titles) → ring becomes white spotlight
+    //                                      with mix-blend-mode: difference
+    // Interactive takes priority over text when both match (e.g. an <a>
+    // inside a <p>) — checked first in the conditional.
+    const interactiveSel = "a, button, [role='button'], summary, .project-card, .social, .btn, input, textarea, select";
+    const textSel =
+      "h1, h2, h3, h4, h5, h6, p, li, dt, dd, blockquote, .hero-lede, .exp-summary, .exp-more-text, .project-desc, .contact-sub, .about p";
+
     document.addEventListener("mouseover", (e) => {
       const target = e.target as HTMLElement;
       if (target.closest(interactiveSel)) {
         root.dataset.hover = "";
+        delete root.dataset.text;
+      } else if (target.closest(textSel)) {
+        root.dataset.text = "";
+        delete root.dataset.hover;
       }
     });
     document.addEventListener("mouseout", (e) => {
       const target = e.target as HTMLElement;
       if (target.closest(interactiveSel)) {
         delete root.dataset.hover;
+      } else if (target.closest(textSel)) {
+        delete root.dataset.text;
       }
     });
 
