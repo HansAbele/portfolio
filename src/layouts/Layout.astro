@@ -6,9 +6,31 @@ import BubbleBackground from "../components/BubbleBackground.astro";
 import CursorFollower from "../components/CursorFollower.astro";
 import SpeedInsights from "@vercel/speed-insights/astro";
 import { COPY, SOCIALS, type Lang } from "../data/copy";
+import { getImage } from "astro:assets";
+import johanPhoto from "../assets/johan.png";
 // Resolve the Inter Variable woff2 URL via Vite so the preload `<link>`
 // points to the exact hashed asset the browser will fetch.
 import interLatin from "@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url";
+
+// Pre-resolve the Hero photo variants so we can emit a `<link rel=preload>`
+// for the LCP image during HTML parse, instead of waiting for the browser
+// to discover the <img> tag in the body. Same widths/sizes as the actual
+// <Image> in Hero.astro — Astro deduplicates the build output, so this is
+// just a URL lookup, not extra image processing.
+const heroVariants = await Promise.all(
+  [220, 340, 540, 760].map(async (w) => {
+    const img = await getImage({
+      src: johanPhoto,
+      width: w,
+      height: w,
+      format: "webp",
+      quality: 85,
+    });
+    return `${img.src} ${w}w`;
+  })
+);
+const heroImageSrcset = heroVariants.join(", ");
+const heroImageSizes = "(max-width: 860px) 220px, 340px";
 
 interface Props {
   title: string;
@@ -94,6 +116,17 @@ const personSchema = {
       as="font"
       type="font/woff2"
       crossorigin="anonymous"
+    />
+
+    {/* Preload the Hero photo so the browser fetches it during HTML parse
+        instead of waiting until it discovers the <img> tag in the body.
+        Uses imagesrcset so the picked variant matches what <Image> emits. */}
+    <link
+      rel="preload"
+      as="image"
+      imagesrcset={heroImageSrcset}
+      imagesizes={heroImageSizes}
+      fetchpriority="high"
     />
 
     <meta property="og:type" content="website" />

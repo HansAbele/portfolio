@@ -163,25 +163,24 @@ const t = COPY[lang];
     background: conic-gradient(from 120deg, var(--accent-2), var(--accent), var(--accent-3), var(--accent-2));
     filter: blur(40px);
     opacity: 0.45;
-    animation: spin 20s linear infinite;
-    will-change: transform;
+    /* Static — used to spin (animation: spin 20s linear infinite) but the
+       big filter:blur(40px) re-rasterizes the layer on every frame and
+       was costing ~1.5s of LCP element-render-delay on mobile per
+       Lighthouse. The blob still glows nicely without rotating. */
   }
 
-  @keyframes spin {
-    to {
-      transform: rotate(360deg);
-    }
-  }
-
+  /* Image fully covers the frame, so the frame styling (background,
+     backdrop-filter, border) is only visible at the rounded edges.
+     backdrop-filter:blur(20px) was forcing the browser to sample and
+     blur the blob behind on every paint — removed for ~500ms LCP win
+     on mobile. The border + box-shadow keep the visual edge crisp. */
   .frame {
     position: relative;
     width: 100%;
     height: 100%;
     border-radius: 50%;
     overflow: hidden;
-    background: var(--glass-2);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    background: var(--bg-2);
     border: 1px solid var(--glass-stroke);
     box-shadow: var(--glass-shadow);
   }
