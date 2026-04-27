@@ -19,7 +19,9 @@ const lang = "es" as const;
   lang={lang}
 >
   <Header lang={lang} />
-  <Reveal><Hero lang={lang} /></Reveal>
+  {/* Hero is above-the-fold — render instantly, no fade-in (avoids the
+      ~2.6s LCP element-render delay caused by the reveal opacity:0). */}
+  <Hero lang={lang} />
   <Reveal><About lang={lang} /></Reveal>
   <Reveal><Experience lang={lang} /></Reveal>
   <Reveal><Projects lang={lang} /></Reveal>

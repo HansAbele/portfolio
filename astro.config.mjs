@@ -10,6 +10,13 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineConfig({
   site: 'https://johantaveras.vercel.app',
   trailingSlash: 'never',
+  // Inline ALL component stylesheets into the HTML head — for our case the
+  // total CSS is ~12KB, well under the 4KB-per-stylesheet default 'auto'
+  // threshold but small enough that one inline blob is faster than a
+  // render-blocking external request (saves ~430ms on mobile per Lighthouse).
+  build: {
+    inlineStylesheets: 'always',
+  },
   prefetch: {
     prefetchAll: true,
     defaultStrategy: 'viewport',

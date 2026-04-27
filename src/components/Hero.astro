@@ -61,6 +61,8 @@ const t = COPY[lang];
         <Image
           src={johanPhoto}
           alt={t.a11y.photoAlt}
+          widths={[220, 340, 540, 760]}
+          sizes="(max-width: 860px) 220px, 340px"
           width={760}
           height={760}
           loading="eager"
