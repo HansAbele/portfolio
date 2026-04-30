@@ -1,8 +1,5 @@
 ---
-import { COPY, SOCIALS, type Lang } from "../data/copy";
-import IconMail from "./icons/IconMail.astro";
-import IconLinkedin from "./icons/IconLinkedin.astro";
-import IconGithub from "./icons/IconGithub.astro";
+import { COPY, type Lang } from "../data/copy";
 
 interface Props {
   lang?: Lang;
@@ -15,24 +12,6 @@ const t = COPY[lang];
 <footer class="footer">
   <div class="container footer-grid">
     <p class="footer-credit">{t.footer.credit}</p>
-
-    <ul class="socials footer-socials" aria-label={t.a11y.socials}>
-      <li>
-        <a class="social" href={SOCIALS.email} aria-label="Email">
-          <IconMail size={14} />
-        </a>
-      </li>
-      <li>
-        <a class="social" href={SOCIALS.linkedin} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
-          <IconLinkedin size={14} />
-        </a>
-      </li>
-      <li>
-        <a class="social" href={SOCIALS.github} target="_blank" rel="noopener noreferrer" aria-label="GitHub">
-          <IconGithub size={14} />
-        </a>
-      </li>
-    </ul>
   </div>
 </footer>
 
@@ -45,10 +24,8 @@ const t = COPY[lang];
   .footer-grid {
     padding: 32px 28px 40px;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
-    gap: 16px;
-    flex-wrap: wrap;
   }
 
   .footer-credit {
@@ -58,16 +35,6 @@ const t = COPY[lang];
     letter-spacing: 0.04em;
     margin: 0;
     text-transform: none;
-  }
-
-  .footer-socials {
-    margin: 0;
-    list-style: none;
-    padding: 0;
-  }
-
-  .footer-socials :global(.social) {
-    width: 36px;
-    height: 36px;
+    text-align: center;
   }
 </style>
