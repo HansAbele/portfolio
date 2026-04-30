@@ -56,7 +56,7 @@ export interface Copy {
       orMail: string;
     };
   };
-  footer: { credit: string; build: string };
+  footer: { credit: string };
   sections: { about: string; experience: string; projects: string; stack: string; contact: string };
   a11y: {
     skipToContent: string;
@@ -199,7 +199,6 @@ export const COPY: Record<Lang, Copy> = {
     },
     footer: {
       credit: "© 2026 · Diseñado y construido por Johan Taveras",
-      build: "build_v1.0 · Astro · ☕",
     },
     sections: {
       about: "Sobre mí",
@@ -347,7 +346,6 @@ export const COPY: Record<Lang, Copy> = {
     },
     footer: {
       credit: "© 2026 · Designed and built by Johan Taveras",
-      build: "build_v1.0 · Astro · ☕",
     },
     sections: {
       about: "About",
