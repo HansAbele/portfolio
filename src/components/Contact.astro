@@ -1,7 +1,8 @@
 ---
-import { COPY, SOCIALS, type Lang } from "../data/copy";
+import { COPY, SOCIALS, PHONE_DISPLAY, type Lang } from "../data/copy";
 import ContactForm from "./ContactForm.astro";
 import IconMail from "./icons/IconMail.astro";
+import IconPhone from "./icons/IconPhone.astro";
 import IconLinkedin from "./icons/IconLinkedin.astro";
 import IconGithub from "./icons/IconGithub.astro";
 
@@ -27,6 +28,16 @@ const t = COPY[lang];
         </a>
       </li>
       <li>
+        <a
+          class="social"
+          href={SOCIALS.phone}
+          aria-label={`Phone ${PHONE_DISPLAY}`}
+          title={PHONE_DISPLAY}
+        >
+          <IconPhone size={16} />
+        </a>
+      </li>
+      <li>
         <a class="social" href={SOCIALS.linkedin} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
           <IconLinkedin size={16} />
         </a>
@@ -37,6 +48,10 @@ const t = COPY[lang];
         </a>
       </li>
     </ul>
+
+    <p class="contact-phone">
+      <a href={SOCIALS.phone}>{PHONE_DISPLAY}</a>
+    </p>
   </div>
 </section>
 
@@ -76,5 +91,26 @@ const t = COPY[lang];
     margin: 32px 0 0;
     list-style: none;
     padding: 0;
+  }
+
+  /* Phone number rendered visibly below the pills — most recruiters
+     scanning a portfolio in a hurry won't hover the icons to find a
+     number. Plain text reads instantly and is still tel-link tappable. */
+  .contact-phone {
+    margin: 14px 0 0;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+  }
+
+  .contact-phone a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.2s var(--ease-out-quart);
+  }
+
+  .contact-phone a:hover {
+    color: var(--accent);
   }
 </style>

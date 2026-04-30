@@ -366,6 +366,10 @@ export const COPY: Record<Lang, Copy> = {
 
 export const SOCIALS = {
   email: "mailto:jtzorinos@gmail.com",
+  phone: "tel:+18294807227",
   linkedin: "https://www.linkedin.com/in/johan-abel-taveras-21a2311b6/",
   github: "https://github.com/HansAbele",
 } as const;
+
+// E.164 number formatted for human display in aria-label / title attrs.
+export const PHONE_DISPLAY = "+1 (829) 480-7227";
